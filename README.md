@@ -1,6 +1,6 @@
 ## Replication repository
 
-This repository provides the database and replication code for the paper: 
+This repository provides the replication code, figures, and tables for the paper: 
 
 **Social Classes and Attitudes Toward Wealth Inequality in European Welfare States**<br>
 by Julia Hofmann and Matthias Schnetzer<br>
