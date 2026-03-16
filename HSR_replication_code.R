@@ -45,13 +45,19 @@ ess <- ess |>
          oesch16 = isco08_to_oesch(x = isco08, self_employed = selfemployed, 
                                    n_employees = emplno, n_classes = 16),
          oesch6 = ifelse(oesch16 == 1, 0, as.numeric(oesch5)),
-         oesch = fct_reorder(recode_values(oesch6, 
-                            0 ~ "Large employers",
-                            1 ~ "Higher-grade service class",
-                            2 ~ "Lower-grade service class",
-                            3 ~ "Small business owners",
-                            4 ~ "Skilled workers",
-                            5 ~ "Unskilled workers"), oesch6, .na_rm = T))
+         oesch = fct_relevel(recode_values(oesch6, 
+                    0 ~ "Large employers",
+                    1 ~ "Higher-grade service class",
+                    2 ~ "Lower-grade service class",
+                    3 ~ "Small business owners",
+                    4 ~ "Skilled workers",
+                    5 ~ "Unskilled workers"),
+                    "Large employers",
+                    "Small business owners",
+                    "Higher-grade service class",
+                    "Lower-grade service class",
+                    "Skilled workers",
+                    "Unskilled workers"))
 
 
 ## Specify welfare regimes ----
@@ -171,7 +177,7 @@ ggsave("figures/Fig_1.png", width = 8, height = 4, dpi = 320, bg = "white")
 
 
 ## Figure 2: Perceptions of wealth inequality by social class ----
-ess |> 
+regdat |> 
   count(oesch, wltdffr, wt = dpweight) |> 
   drop_na() |> 
   mutate(prop = prop.table(n), .by = oesch) |> 
@@ -189,7 +195,7 @@ ggsave("figures/Fig_2.png", width = 7, height = 5, dpi = 320, bg = "white")
 
 
 ## Figure 3: Social justice principles by social class ----
-ess |> 
+regdat |> 
   select(oesch, d_sofrdst, d_sofrwrk, d_sofrpr, d_sofrprv, dpweight) |> 
   pivot_longer(starts_with("d_"), names_to = "var", values_to = "values") |> 
   count(oesch, var, values, wt = dpweight) |> 
@@ -366,14 +372,20 @@ ggsave("figures/Fig_A2.png", width = 7, height = 5, dpi = 320, bg = "white")
 
 # TABLES ----
 
-## Table 1: Distribution of observations across Oesch classes ----
-ess |> 
+## Table 2: Distribution of observations across Oesch classes ----
+regdat |> 
   count(oesch) |> 
-  drop_na() |> 
-  mutate(freq = n/sum(n)*100)
+  mutate(freq = n/sum(n)*100) |>
+  janitor::adorn_totals("row") |> 
+  gt() |> 
+  cols_label(oesch ~ "Oesch class", n ~ "Number of observations", freq ~ "Share of sample") |> 
+  cols_align(align = "left", columns = oesch) |>
+  fmt_integer(columns = "n") |> 
+  fmt_percent(columns = "freq", decimals = 1, scale_values = F) |>
+  gtsave("tables/Tab_2.html")
 
 
-## Table 2: Effect of social classes and social justice principles on the perception of wealth inequalities (ordered logistic regression models) ----
+## Table 4: Effect of social classes and social justice principles on the perception of wealth inequalities (ordered logistic regression models) ----
 olfe <- ordinal::clm(wltdffrord ~ oeschreg + female + agea + academic + brncntry, 
                      data = regdat, weights = dpweight)
 olfe1 <- ordinal::clm(wltdffrord ~ oeschreg + female + agea + academic + brncntry + d_sofrdst + d_sofrwrk + d_sofrpr + d_sofrprv, 
@@ -387,8 +399,10 @@ olfe4 <- ordinal::clm(r_sofrpr ~ oeschreg + female + agea + academic + brncntry,
 olfe5 <- ordinal::clm(r_sofrprv ~ oeschreg + female + agea + academic + brncntry, 
                      data = regdat, weights = dpweight)
 
-htmlreg(list(olfe, olfe1, olfe2, olfe3, olfe4, olfe5), file = "tables/Tab_2.html",
+htmlreg(list(olfe, olfe1, olfe2, olfe3, olfe4, olfe5), file = "tables/Tab_4.html",
         custom.coef.map = split(vars$name, vars$variable),
+        include.nobs = FALSE,
+        custom.gof.rows = list("Observations" = rep(nrow(regdat), 6)),
         digits = 3, stars = c(0.001, 0.01, 0.05),
         caption = NULL,
         custom.model.names = c("Inequality", "Inequality","Equality", "Equity", "Need", "Status"))
@@ -399,7 +413,14 @@ regdat |>
   count(cntry) |>
   left_join(cntry |> 
   select(cntry, wlth_top5, wigroup_t)) |> 
-  arrange(wlth_top5) 
+  arrange(wlth_top5) |> 
+  gt() |> 
+  cols_align(align = "right", columns = wigroup_t) |>
+  fmt_integer(columns = "n") |> 
+  fmt_percent(columns = "wlth_top5", decimals = 1, scale_values = F) |>
+  cols_label(cntry ~ "Country", n ~ "Obs.", wlth_top5 ~ "Top 5% share", wigroup_t ~ "Group") |> 
+  gtsave("tables/Tab_A1.html")
+
 
 
 ## Table A2: Effect of social classes (Wright) and social justice principles on the perception of wealth inequalities (ordered logistic regression models) ----
@@ -456,6 +477,8 @@ olfe5 <- ordinal::clm(r_sofrprv ~ wright + female + agea + academic + brncntry,
 
 htmlreg(list(olfe, olfe1, olfe2, olfe3, olfe4, olfe5), file = "tables/Tab_A2.html",
         custom.coef.map = split(vars_wr$name, vars_wr$variable),
+                include.nobs = FALSE,
+        custom.gof.rows = list("Observations" = rep(nrow(regdat_wr), 6)),
         digits = 3, stars = c(0.001, 0.01, 0.05),
         caption = NULL,
         custom.model.names = c("Inequality", "Inequality","Equality", "Equity", "Need", "Status"))
