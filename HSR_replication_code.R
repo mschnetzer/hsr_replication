@@ -1,7 +1,7 @@
 # LOAD PACKAGES ----
 
 # Packages for data editing
-librarian::shelf(tidyverse, eurostat, readxl, haven, DIGCLASS)
+librarian::shelf(tidyverse, eurostat, readxl, haven, car, DIGCLASS)
 # Packages for tables
 librarian::shelf(texreg, gt, gtExtras, Hmisc)
 # Packages for figures
@@ -174,6 +174,7 @@ plotdat |>
         legend.key.spacing.x = unit(0.5, "lines"))
 
 ggsave("figures/Fig_1.png", width = 8, height = 4, dpi = 320, bg = "white")
+ggsave("figures/Fig_1.pdf", width = 8, height = 4, device = cairo_pdf)
 
 
 ## Figure 2: Perceptions of wealth inequality by social class ----
@@ -192,6 +193,7 @@ regdat |>
         panel.grid = element_blank())
 
 ggsave("figures/Fig_2.png", width = 7, height = 5, dpi = 320, bg = "white")
+ggsave("figures/Fig_2.pdf", width = 7, height = 5, device = cairo_pdf)
 
 
 ## Figure 3: Social justice principles by social class ----
@@ -224,6 +226,7 @@ regdat |>
         group.colours = c("#f1af3a", "#cf5e4e", "#637b31", "#003967"))
 
 ggsave("figures/Fig_3.png", width = 7, height = 5, dpi = 320, bg = "white")
+ggsave("figures/Fig_3.pdf", width = 7, height = 5, device = cairo_pdf)
 
 
 ## Figure 4: Mean perceptions of wealth inequality by social class across countries with low, medium, and high wealth inequality ----
@@ -252,6 +255,7 @@ mwi |>
   legend.title = element_blank())
 
 ggsave("figures/Fig_4.png", width = 7, height = 4, dpi = 320, bg = "white")
+ggsave("figures/Fig_4.pdf", width = 7, height = 4, device = cairo_pdf)
 
 
 ## Figure 5: Percentage viewing wealth inequality as "unfairly large" by social class across countries with low, medium, and high wealth inequality ----
@@ -272,6 +276,7 @@ regdat |>
   legend.title = element_blank())
 
 ggsave("figures/Fig_5.png", width = 7, height = 5, dpi = 320, bg = "white")
+ggsave("figures/Fig_5.pdf", width = 7, height = 5, device = cairo_pdf)
 
 
 ## Figure 6: Mean perceptions of wealth inequality by social class across welfare state regimes ----
@@ -300,6 +305,7 @@ mwr |>
   legend.title = element_blank())
 
 ggsave("figures/Fig_6.png", width = 7, height = 4, dpi = 320, bg = "white")
+ggsave("figures/Fig_6.pdf", width = 7, height = 4, device = cairo_pdf)
 
 
 ## Figure 7: Percentage viewing wealth inequality as "unfairly large" by social class across welfare state regimes ----
@@ -320,6 +326,7 @@ regdat |>
   legend.title = element_blank())
 
 ggsave("figures/Fig_7.png", width = 7, height = 5, dpi = 320, bg = "white")
+ggsave("figures/Fig_7.pdf", width = 7, height = 5, device = cairo_pdf)
 
 
 ## Figure A1: Perceptions of wealth inequality by social class (Wright) ----
@@ -336,6 +343,7 @@ ess |> count(wright, wltdffr, wt = dpweight) |>
   theme(legend.position = "none")
 
 ggsave("figures/Fig_A1.png", width = 7, height = 5, dpi = 320, bg = "white")
+ggsave("figures/Fig_A1.pdf", width = 7, height = 5, device = cairo_pdf)
 
 
 ## Figure A2: Social justice principles by social class (Wright) ----
@@ -368,6 +376,7 @@ ess |>
         group.colours = c("#f1af3a", "#cf5e4e", "#637b31", "#003967"))
 
 ggsave("figures/Fig_A2.png", width = 7, height = 5, dpi = 320, bg = "white")
+ggsave("figures/Fig_A2.pdf", width = 7, height = 5, device = cairo_pdf)
 
 
 # TABLES ----
